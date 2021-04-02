@@ -1,0 +1,9 @@
+{
+  "name": "Sagar Patel",
+  "start_url": "/",
+  "display": "standalone",
+  "start_url": "/",
+  "background_color": "#fff",
+  "scope": "/",
+  "theme_color": "#3367D6"
+}
