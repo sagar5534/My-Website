@@ -1,4 +1,8 @@
-# my-website
+# My Personal Website
+
+## Check out this site
+https://sagarp.ca/
+
 
 ## Project setup
 ```
@@ -19,3 +23,4 @@ npm run build
 ```
 npm run lint
 ```
+Enjoy! 
