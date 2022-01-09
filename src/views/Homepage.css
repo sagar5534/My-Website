@@ -1,0 +1,51 @@
+a {
+  text-decoration: none;
+}
+
+.title-name {
+  font-family: "Pacifico";
+  font-size: 100px;
+  color: #fff;
+}
+
+.memoriaApps {
+  height: 52px;
+}
+
+.lead {
+  color: #fff;
+  font-family: "Nunito Sans", sans-serif;
+  font-size: 21px;
+  font-weight: 300;
+  line-height: 1.4;
+  margin-bottom: 5px;
+}
+
+.links {
+  color: #fff;
+  font-family: "Nunito Sans", sans-serif;
+  font-size: 21px;
+}
+
+.underline {
+  text-decoration: underline;
+  text-underline-position: under;
+}
+
+.projectTitle {
+  color: #333;
+  font-family: "Nunito Sans", sans-serif;
+  font-size: 40px;
+  font-weight: 300;
+  line-height: 1.4;
+  margin-bottom: 5px;
+}
+
+.project {
+  height: 80vh;
+  width: 100%;
+}
+
+.grey {
+  background-color: #333;
+}
