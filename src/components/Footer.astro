@@ -1,0 +1,31 @@
+---
+import { footerLinks as links } from "../data/nav";
+---
+
+<footer
+  class="w-full py-section-gap px-margin-mobile md:px-margin-page flex flex-col gap-stack-md bg-primary text-on-primary"
+>
+  <div
+    class="flex flex-col md:flex-row justify-between items-start md:items-end gap-12"
+  >
+    <div>
+      <span class="font-headline-sm text-[32px] font-extrabold">Majd.</span>
+      <p class="font-body-md text-body-md opacity-60 mt-4 max-w-sm">
+        Engineering digital clarity through intentional code and minimalist
+        aesthetics.
+      </p>
+    </div>
+    <div class="flex flex-wrap gap-8">
+      {
+        links.map((link) => (
+          <a
+            class="font-ui-text text-[16px] font-bold opacity-60 hover:text-on-primary hover:opacity-100 transition-all uppercase"
+            href={link.href}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</footer>

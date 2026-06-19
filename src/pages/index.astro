@@ -1,0 +1,78 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Hero from "../components/Hero.astro";
+import Intro from "../components/Intro.astro";
+import Experience from "../components/Experience.astro";
+import Works from "../components/Works.astro";
+import Connect from "../components/Connect.astro";
+---
+
+<BaseLayout
+  title="Majd | Software Engineer & Designer"
+  type="website"
+  person={true}
+  mainClass=""
+>
+  <Hero />
+  <Intro />
+  <Experience />
+  <Works />
+  <Connect />
+</BaseLayout>
+
+<script>
+  // ----------------------------------------------------------------------
+  // Typewriter effect
+  // ----------------------------------------------------------------------
+  const words = [
+    "SOFTWARE ENGINEER",
+    "FULL STACK DEVELOPER",
+    "INTERFACE DESIGNER",
+  ];
+  const typeSpeed = 150;
+  const deleteSpeed = 100;
+  const pauseTime = 2000;
+
+  let wordIndex = 0;
+  let charIndex = 0;
+  let isDeleting = false;
+
+  const typewriterElement = document.getElementById("typewriter-text");
+
+  // Respect reduced-motion: show a single word statically, no animation loop.
+  const reduceMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+
+  function type() {
+    if (!typewriterElement) return;
+    const currentWord = words[wordIndex];
+
+    if (isDeleting) {
+      typewriterElement.textContent = currentWord.substring(0, charIndex - 1);
+      charIndex--;
+    } else {
+      typewriterElement.textContent = currentWord.substring(0, charIndex + 1);
+      charIndex++;
+    }
+
+    let nextActionSpeed = isDeleting ? deleteSpeed : typeSpeed;
+
+    if (!isDeleting && charIndex === currentWord.length) {
+      isDeleting = true;
+      nextActionSpeed = pauseTime;
+    } else if (isDeleting && charIndex === 0) {
+      isDeleting = false;
+      wordIndex = (wordIndex + 1) % words.length;
+      nextActionSpeed = 500;
+    }
+
+    setTimeout(type, nextActionSpeed);
+  }
+
+  if (reduceMotion) {
+    if (typewriterElement) typewriterElement.textContent = words[0];
+  } else {
+    type();
+  }
+</script>

@@ -1,0 +1,64 @@
+---
+import "../styles/global.css";
+// Self-hosted fonts (no third-party round-trips). Weights match the design
+// tokens in global.css: Archivo 400/700/800, Inter 400/500/600/700.
+import "@fontsource/archivo/400.css";
+import "@fontsource/archivo/700.css";
+import "@fontsource/archivo/800.css";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/inter/700.css";
+import "@fontsource-variable/material-symbols-outlined";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+import SEO from "../components/SEO.astro";
+import type { NavLink } from "../data/nav";
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  type?: "website" | "article";
+  person?: boolean;
+  navLinks?: NavLink[];
+  showNav?: boolean;
+  /** Override <main> classes. Defaults to pt-32 (clears the fixed nav) when
+   *  showNav is set; the homepage opts out since its Hero handles its own
+   *  top offset. */
+  mainClass?: string;
+}
+
+const {
+  title,
+  description = "Software engineer and designer crafting precise digital experiences through code and minimalist design principles.",
+  image,
+  type,
+  person,
+  navLinks,
+  showNav = true,
+  mainClass,
+} = Astro.props;
+
+const resolvedMainClass = mainClass ?? (showNav ? "pt-32" : "");
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <SEO {title} {description} {image} {type} {person} />
+  </head>
+  <body
+    class="font-body-md text-on-background selection:bg-primary selection:text-on-primary"
+  >
+    {showNav && <Nav links={navLinks} />}
+    <main class={resolvedMainClass}>
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

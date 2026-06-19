@@ -1,0 +1,290 @@
+---
+import { navLinks, type NavLink } from "../data/nav";
+
+interface Props {
+  links?: NavLink[];
+  brand?: string;
+  brandHref?: string;
+}
+
+// Defaults reproduce the homepage nav so existing usages need no changes.
+const {
+  links = navLinks,
+  brand = "Majd",
+  brandHref = "/#home",
+} = Astro.props;
+---
+
+<nav
+  class="fixed top-0 left-0 right-0 z-50 flex justify-center items-start pointer-events-none"
+>
+  <div
+    id="nav-bubble"
+    data-open="false"
+    class="bg-primary shadow-2xl pointer-events-auto overflow-hidden box-border
+           mt-4 w-fit px-6 py-3 rounded-full
+           flex flex-col md:flex-row md:items-center md:gap-8
+           md:!mt-4 md:!w-fit md:!rounded-full md:!px-6 md:!py-3"
+  >
+    <div class="flex items-center justify-between gap-8 w-full md:w-auto">
+      <a
+        class="font-headline-sm text-[20px] font-bold text-on-primary"
+        href={brandHref}>{brand}</a
+      >
+      <button
+        id="nav-toggle"
+        class="md:hidden text-on-primary"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="nav-menu"
+      >
+        <span id="nav-toggle-icon" class="material-symbols-outlined">menu</span>
+      </button>
+    </div>
+
+    <!-- Mobile: collapsible panel. Desktop: inline row. -->
+    <div
+      id="nav-menu"
+      style="grid-template-rows: minmax(0, 0fr);"
+      class="grid opacity-0 transition-[grid-template-rows,opacity] duration-[600ms] ease-[cubic-bezier(0.65,0,0.35,1)]
+             md:flex md:items-center md:gap-6 md:!opacity-100"
+    >
+      <div class="min-h-0 overflow-hidden flex flex-col items-center gap-6 pt-6 md:pt-0 md:flex-row md:overflow-visible">
+        {
+          links.map((link, i) => (
+            <a
+              class:list={[
+                "nav-link font-ui-text text-[20px] md:text-[16px] hover:opacity-100 transition-all active:scale-95",
+                i === links.length - 1
+                  ? "font-semibold text-on-primary"
+                  : "font-medium text-on-primary-container opacity-70",
+              ]}
+              href={link.href}
+            >
+              {link.label}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  const bubble = document.getElementById("nav-bubble");
+  const menu = document.getElementById("nav-menu");
+  const toggle = document.getElementById("nav-toggle");
+  const icon = document.getElementById("nav-toggle-icon");
+
+  const DURATION = 600;
+  const EASING = "cubic-bezier(0.65, 0, 0.35, 1)"; // ease-in-out, even growth
+  let animating = false;
+
+  // Closed pill (mt-4, px-6 py-3) vs. open full-width bar (mt-0, larger
+  // padding). Border-radius is animated separately so the top corners can
+  // flatten earlier than the box finishes growing — see animateBubble.
+  const CLOSED = {
+    marginTop: "1rem",
+    paddingLeft: "1.5rem",
+    paddingRight: "1.5rem",
+    paddingTop: "0.75rem",
+    paddingBottom: "0.75rem",
+  };
+  const OPEN = {
+    marginTop: "0px",
+    paddingLeft: "1.5rem", // px-margin-mobile
+    paddingRight: "1.5rem",
+    paddingTop: "1.5rem",
+    paddingBottom: "1.5rem",
+  };
+
+  const BOTTOM_OPEN = "1.5rem"; // panel bottom radius when docked
+  const RADIUS_EASING = "cubic-bezier(0.5, 0, 0.1, 1)"; // front-loaded
+
+  // A `9999px` radius on the short pill is clamped by the browser to half the
+  // height, so animating 9999px -> 0 shows no visible change until the value
+  // finally drops below that clamp near the very end (the "jump"). Instead we
+  // animate from a concrete pixel radius equal to the pill's actual rounding
+  // (half its height) so every interpolation step is visible.
+  function buildRadiusFrames(open: boolean, pillRadius: number) {
+    const pill = `${pillRadius}px`;
+    const docked = {
+      borderTopLeftRadius: "0px",
+      borderTopRightRadius: "0px",
+      borderBottomLeftRadius: BOTTOM_OPEN,
+      borderBottomRightRadius: BOTTOM_OPEN,
+    };
+    const rounded = {
+      borderTopLeftRadius: pill,
+      borderTopRightRadius: pill,
+      borderBottomLeftRadius: pill,
+      borderBottomRightRadius: pill,
+    };
+    return open
+      ? // Top corners flatten by ~55%, then hold while the box keeps growing.
+        [
+          { offset: 0, ...rounded },
+          { offset: 0.55, ...docked },
+          { offset: 1, ...docked },
+        ]
+      : // Hold the docked shape, then round back into the pill near the end.
+        [
+          { offset: 0, ...docked },
+          { offset: 0.45, ...docked },
+          { offset: 1, ...rounded },
+        ];
+  }
+
+  function isDesktop() {
+    return window.matchMedia("(min-width: 768px)").matches;
+  }
+
+  function setMenuShown(open: boolean) {
+    if (!menu) return;
+    menu.style.gridTemplateRows = open ? "minmax(0, 1fr)" : "minmax(0, 0fr)";
+    menu.classList.toggle("opacity-100", open);
+    menu.classList.toggle("opacity-0", !open);
+  }
+
+  // Half the closed-pill height = its visual corner radius. Cached when we
+  // see the bubble closed so we still have it while animating a close.
+  let pillRadius = 24;
+
+  function animateBubble(open: boolean) {
+    if (!bubble) return;
+
+    const startRect = bubble.getBoundingClientRect();
+    // When opening, the bubble is currently closed -> capture its true radius.
+    if (open) pillRadius = startRect.height / 2;
+
+    // FLIP: capture the current pixel width, flip to the destination
+    // resting layout, measure the destination width, then animate between
+    // the two measured values so width interpolates smoothly.
+    const startWidth = startRect.width;
+    bubble.dataset.open = String(open);
+    applyResting(open);
+    const endWidth = bubble.getBoundingClientRect().width;
+
+    const from = open ? CLOSED : OPEN;
+    const to = open ? OPEN : CLOSED;
+
+    animating = true;
+    const anim = bubble.animate(
+      [
+        { width: `${startWidth}px`, ...from },
+        { width: `${endWidth}px`, ...to },
+      ],
+      { duration: DURATION, easing: EASING, fill: "backwards" },
+    );
+
+    // Border-radius runs in parallel on a front-loaded curve so the top
+    // corners flatten into the screen edge early in the growth.
+    bubble.animate(buildRadiusFrames(open, pillRadius), {
+      duration: DURATION,
+      easing: RADIUS_EASING,
+      fill: "backwards",
+    });
+
+    anim.onfinish = () => {
+      animating = false;
+      anim.cancel(); // drop the inline-style hold; resting classes own layout
+    };
+  }
+
+  function applyResting(open: boolean) {
+    if (!bubble) return;
+    bubble.classList.toggle("w-full", open);
+    bubble.classList.toggle("w-fit", !open);
+    // Open: square top edge, rounded bottom corners. Closed: full pill.
+    bubble.classList.toggle("rounded-t-none", open);
+    bubble.classList.toggle("rounded-b-3xl", open);
+    bubble.classList.toggle("rounded-full", !open);
+    bubble.classList.toggle("mt-0", open);
+    bubble.classList.toggle("mt-4", !open);
+    bubble.classList.toggle("py-6", open);
+    bubble.classList.toggle("py-3", !open);
+  }
+
+  function setOpen(open: boolean) {
+    if (!bubble || !menu || !toggle || !icon || animating) return;
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    icon.textContent = open ? "close" : "menu";
+    setMenuShown(open);
+    animateBubble(open);
+  }
+
+  toggle?.addEventListener("click", () => {
+    setOpen(bubble?.dataset.open !== "true");
+  });
+
+  menu?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      if (bubble?.dataset.open === "true") setOpen(false);
+    });
+  });
+
+  window.matchMedia("(min-width: 768px)").addEventListener("change", (e) => {
+    if (e.matches && bubble?.dataset.open === "true") {
+      // Snap closed without animation when jumping to desktop layout.
+      setMenuShown(false);
+      bubble!.dataset.open = "false";
+      applyResting(false);
+    }
+  });
+</script>
+
+<script>
+  // --------------------------------------------------------------------------
+  // Scroll-spy: underline the nav link whose section is in view. Lives in the
+  // Nav component so every page that renders it (home, /blog) gets the
+  // behaviour. Links match sections via href.includes(id), so on-page anchors
+  // (#projects) and homepage-rooted ones (/#works) both resolve.
+  // --------------------------------------------------------------------------
+  const sections = document.querySelectorAll("section[id]");
+  const spyLinks =
+    document.querySelectorAll<HTMLAnchorElement>("nav a.nav-link");
+
+  function updateActiveLink() {
+    let current = "";
+    sections.forEach((section) => {
+      const sectionTop = (section as HTMLElement).offsetTop;
+      if (window.scrollY >= sectionTop - 100) {
+        current = section.getAttribute("id") ?? "";
+      }
+    });
+
+    // Near the bottom the last section's top may be unreachable, so the
+    // loop above can't select it. Force the last section as active.
+    const atBottom =
+      window.innerHeight + window.scrollY >=
+      document.documentElement.scrollHeight - 2;
+    if (atBottom && sections.length) {
+      current = sections[sections.length - 1].getAttribute("id") ?? current;
+    }
+
+    spyLinks.forEach((link) => {
+      link.classList.remove("border-b-2", "border-on-primary");
+      link.classList.add("opacity-70");
+      const href = link.getAttribute("href") ?? "";
+      if (current && href.includes(current)) {
+        link.classList.add("border-b-2", "border-on-primary");
+        link.classList.remove("opacity-70");
+      }
+    });
+  }
+
+  // Coalesce scroll bursts into one update per frame — updateActiveLink reads
+  // layout (offsetTop), so running it on every raw scroll event would force
+  // repeated reflows. Behaviour is identical.
+  let ticking = false;
+  window.addEventListener("scroll", () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      updateActiveLink();
+      ticking = false;
+    });
+  });
+  updateActiveLink();
+</script>

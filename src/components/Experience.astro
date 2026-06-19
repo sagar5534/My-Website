@@ -1,0 +1,84 @@
+---
+const companies = [
+  {
+    name: "Stitch AI",
+    roles: [
+      {
+        title: "Senior Frontend Engineer",
+        date: "Jan 2024 — Present",
+        description:
+          "Architecting scalable UI systems and leading the development of collaborative design tools.",
+      },
+      {
+        title: "Frontend Engineer",
+        date: "Jan 2023 — Dec 2023",
+        description:
+          "Built core component libraries and optimized performance for the primary design editor.",
+      },
+    ],
+  },
+  {
+    name: "Quantum Labs",
+    roles: [
+      {
+        title: "Product Engineer",
+        date: "June 2021 — Dec 2022",
+        description:
+          "Developed high-performance dashboard interfaces and optimized core rendering pipelines.",
+      },
+    ],
+  },
+  {
+    name: "Nebula Studio",
+    roles: [
+      {
+        title: "Software Engineer",
+        date: "Aug 2019 — May 2021",
+        description:
+          "Focused on minimalist web architectures and fluid motion design for client portfolios.",
+      },
+    ],
+  },
+];
+---
+
+<section
+  id="experience"
+  class="px-margin-mobile md:px-margin-page py-section-gap border-t border-outline-variant"
+>
+  <div class="max-w-7xl mx-auto">
+    <div class="mb-16">
+      <h2 class="font-headline-lg text-headline-lg">Experience</h2>
+    </div>
+    <div class="divide-y divide-outline-variant">
+      {
+        companies.map((company) => (
+          <div class="py-12 grid grid-cols-1 md:grid-cols-12 gap-8">
+            <div class="md:col-span-4">
+              <h3 class="font-headline-sm text-headline-sm uppercase tracking-tight">
+                {company.name}
+              </h3>
+            </div>
+            <div class="md:col-span-8 space-y-8">
+              {company.roles.map((role) => (
+                <div>
+                  <div class="flex flex-col md:flex-row justify-between items-start mb-4">
+                    <h4 class="font-ui-text text-[16px] font-bold uppercase">
+                      {role.title}
+                    </h4>
+                    <span class="font-ui-text text-[16px] font-medium opacity-60">
+                      {role.date}
+                    </span>
+                  </div>
+                  <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                    {role.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,59 @@
+---
+const badges = ["AVAILABLE FOR HIRE", "BASED IN LONDON"];
+---
+
+<section
+  id="home"
+  class="min-h-screen h-screen flex flex-col justify-center items-center px-margin-mobile md:px-margin-page pt-32 pb-section-gap relative overflow-hidden"
+>
+  <!-- Decorative scattered icons -->
+  <div class="absolute top-1/4 left-10 opacity-20 rotate-12">
+    <span
+      class="material-symbols-outlined text-[120px]"
+      style="font-variation-settings: 'FILL' 1;">bolt</span
+    >
+  </div>
+  <div class="absolute bottom-1/4 right-10 opacity-20 -rotate-12">
+    <span
+      class="material-symbols-outlined text-[100px]"
+      style="font-variation-settings: 'FILL' 1;">grade</span
+    >
+  </div>
+
+  <div class="text-center z-10 w-full">
+    <div class="mb-stack-sm flex justify-center gap-2">
+      {
+        badges.map((badge) => (
+          <span class="font-ui-text text-[14px] font-bold px-3 py-1 border border-outline rounded-full tracking-wider">
+            {badge}
+          </span>
+        ))
+      }
+    </div>
+
+    <div
+      class="min-h-[2.5em] md:min-h-[3.2em] flex items-center justify-center w-full"
+    >
+      <h1
+        id="typewriter-text"
+        class="font-hero-display text-hero-display-mobile md:text-hero-display uppercase mb-stack-md max-w-6xl typewriter-cursor transition-all duration-300"
+      >
+        FULL STACK
+      </h1>
+    </div>
+
+    <p
+      class="font-sub-description text-sub-description max-w-2xl mx-auto opacity-70"
+    >
+      Crafting precise digital experiences through code and minimalist design
+      principles.
+    </p>
+
+    <div class="mt-stack-md">
+      <a
+        class="inline-block bg-primary text-on-primary px-8 py-4 rounded-full font-ui-text text-[16px] font-bold hover:scale-105 transition-transform uppercase tracking-tight"
+        href="#works">View Resume</a
+      >
+    </div>
+  </div>
+</section>

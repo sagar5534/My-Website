@@ -1,0 +1,56 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  post: CollectionEntry<"posts">;
+}
+
+const { post } = Astro.props;
+const { title, subtitle, date, image, repo } = post.data;
+
+// A repo entry links out to GitHub; otherwise to the internal write-up page.
+const href = repo ?? `/blog/${post.id}`;
+const external = Boolean(repo);
+
+const dateLabel = date?.toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+---
+
+<a
+  href={href}
+  target={external ? "_blank" : undefined}
+  rel={external ? "noopener noreferrer" : undefined}
+  class="relative aspect-video rounded-xl overflow-hidden group block"
+>
+  {
+    image ? (
+      <img
+        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        src={image}
+        alt={title}
+        width="1280"
+        height="720"
+        loading="lazy"
+        decoding="async"
+      />
+    ) : (
+      <div class="w-full h-full bg-surface" />
+    )
+  }
+  <div
+    class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6 text-on-primary"
+  >
+    {
+      dateLabel && (
+        <span class="font-ui-text text-[14px] font-medium opacity-70 mb-1">
+          {dateLabel}
+        </span>
+      )
+    }
+    <h3 class="font-headline-sm text-headline-sm uppercase">{title}</h3>
+    {subtitle && <p class="font-body-md text-body-md opacity-80">{subtitle}</p>}
+  </div>
+</a>

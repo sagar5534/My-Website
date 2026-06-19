@@ -1,0 +1,80 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PostCard from "../components/PostCard.astro";
+import type { NavLink } from "../data/nav";
+
+// All published entries. Split into projects vs. writing by `type`, each
+// sorted newest first (dateless entries sort to the bottom).
+const published = await getCollection("posts", (e) => !e.data.draft);
+const byDate = (a: typeof published[number], b: typeof published[number]) =>
+  (b.data.date?.getTime() ?? 0) - (a.data.date?.getTime() ?? 0);
+
+const projects = published.filter((e) => e.data.type === "project").sort(byDate);
+const writing = published.filter((e) => e.data.type === "blog").sort(byDate);
+
+// Blog-page nav: anchors to the on-page sections, plus Connect on the homepage.
+const navLinks: NavLink[] = [
+  { label: "Projects", href: "#projects" },
+  { label: "Blogs", href: "#blogs" },
+  { label: "Connect", href: "/#contact" },
+];
+---
+
+<BaseLayout title="Writing & Work | Majd" navLinks={navLinks}>
+  <section
+    id="projects"
+    class="px-margin-mobile md:px-margin-page py-section-gap"
+  >
+    <div class="max-w-7xl mx-auto">
+      <div class="mb-16">
+        <h1 class="font-headline-lg text-headline-lg">Projects</h1>
+        <p class="font-body-md text-body-md opacity-70 mt-4 max-w-xl">
+          Selected engineering and design work, most recent first.
+        </p>
+      </div>
+
+      {
+        projects.length > 0 ? (
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {projects.map((post) => (
+              <PostCard post={post} />
+            ))}
+          </div>
+        ) : (
+          <p class="font-body-md text-body-md opacity-70">
+            Nothing published yet — check back soon.
+          </p>
+        )
+      }
+    </div>
+  </section>
+
+  <section
+    id="blogs"
+    class="px-margin-mobile md:px-margin-page py-section-gap border-t border-outline-variant"
+  >
+    <div class="max-w-7xl mx-auto">
+      <div class="mb-16">
+        <h2 class="font-headline-lg text-headline-lg">Writing</h2>
+        <p class="font-body-md text-body-md opacity-70 mt-4 max-w-xl">
+          Notes on engineering, design, and the space in between.
+        </p>
+      </div>
+
+      {
+        writing.length > 0 ? (
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {writing.map((post) => (
+              <PostCard post={post} />
+            ))}
+          </div>
+        ) : (
+          <p class="font-body-md text-body-md opacity-70">
+            Nothing published yet — check back soon.
+          </p>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>

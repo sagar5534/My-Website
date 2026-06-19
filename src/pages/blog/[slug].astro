@@ -1,0 +1,76 @@
+---
+import { getCollection, render } from "astro:content";
+import type { GetStaticPaths } from "astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+// Only entries without a `repo` get an internal page — repo entries link out,
+// so generating a page for them would create dead routes.
+export const getStaticPaths = (async () => {
+  const posts = await getCollection(
+    "posts",
+    (e) => !e.data.repo && !e.data.draft,
+  );
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}) satisfies GetStaticPaths;
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { title, subtitle, date, image } = post.data;
+
+const dateLabel = date?.toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+---
+
+<BaseLayout
+  title={`${title} | Majd`}
+  description={subtitle}
+  image={image}
+  type="article"
+  showNav={false}
+>
+  <article class="px-margin-mobile md:px-margin-page py-section-gap">
+    <header class="max-w-3xl mx-auto mb-12">
+      <a
+        href="/blog"
+        class="inline-flex items-center gap-1 font-ui-text text-[14px] font-medium opacity-60 hover:opacity-100 transition-opacity mb-8"
+      >
+        <span class="material-symbols-outlined text-base">arrow_back</span>
+        All work
+      </a>
+      {
+        dateLabel && (
+          <span class="block font-ui-text text-[14px] font-medium opacity-60 mb-3">
+            {dateLabel}
+          </span>
+        )
+      }
+      <h1 class="font-headline-lg text-headline-lg">{title}</h1>
+      {
+        subtitle && (
+          <p class="font-body-md text-body-md opacity-70 mt-4">{subtitle}</p>
+        )
+      }
+    </header>
+
+    {
+      image && (
+        <img
+          src={image}
+          alt={title}
+          width="1280"
+          height="720"
+          loading="eager"
+          decoding="async"
+          class="w-full max-w-4xl mx-auto aspect-video object-cover rounded-xl mb-12"
+        />
+      )
+    }
+
+    <div class="post-body max-w-3xl mx-auto">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
