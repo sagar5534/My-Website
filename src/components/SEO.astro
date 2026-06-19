@@ -1,0 +1,69 @@
+---
+// Centralised <head> metadata: title, description, canonical, Open Graph,
+// Twitter Card, and (homepage only) a JSON-LD Person block. Used by BaseLayout
+// so every page emits consistent, absolute-URL SEO tags.
+interface Props {
+  title: string;
+  description: string;
+  image?: string; // path or URL; resolved to an absolute URL below
+  type?: "website" | "article";
+  /** Emit the JSON-LD Person block (homepage only). */
+  person?: boolean;
+}
+
+const {
+  title,
+  description,
+  // TODO: add a 1200x630 public/og.png and default `image` to "/og.png" so the
+  // homepage and other imageless pages get a social card. Until that asset
+  // exists we omit og:image rather than ship a 404'd reference.
+  image,
+  type = "website",
+  person = false,
+} = Astro.props;
+
+const siteName = "Sagar Patel";
+
+// Astro.site is set in astro.config.mjs; canonical/OG URLs are absolute.
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const imageUrl = image ? new URL(image, Astro.site).href : undefined;
+
+// Data-light so it survives the later identity pass. `sameAs` left empty until
+// real social links are wired in.
+const personLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: siteName,
+  url: Astro.site?.href,
+};
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+
+<!-- Open Graph -->
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:type" content={type} />
+<meta property="og:url" content={canonical} />
+<meta property="og:site_name" content={siteName} />
+{imageUrl && <meta property="og:image" content={imageUrl} />}
+
+<!-- Twitter -->
+<meta
+  name="twitter:card"
+  content={imageUrl ? "summary_large_image" : "summary"}
+/>
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+{imageUrl && <meta name="twitter:image" content={imageUrl} />}
+
+{
+  person && (
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(personLd)}
+    />
+  )
+}

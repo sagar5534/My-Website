@@ -1,0 +1,254 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Design tokens — "Monochrome Engineering" design system.
+   Tailwind v4 reads these to generate utilities (bg-primary, text-headline-lg…)
+--------------------------------------------------------------------------- */
+@theme {
+  /* Colors */
+  --color-background: #fbf9f9;
+  /* Warm off-white used for the page body and alternating sections. */
+  --color-canvas: #f9f5f0;
+  --color-on-background: #1b1c1c;
+  --color-surface: #fbf9f9;
+  --color-surface-bright: #fbf9f9;
+  --color-surface-dim: #dbdad9;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f5f3f3;
+  --color-surface-container: #efeded;
+  --color-surface-container-high: #e9e8e7;
+  --color-surface-container-highest: #e4e2e2;
+  --color-surface-variant: #e4e2e2;
+  --color-on-surface: #1b1c1c;
+  --color-on-surface-variant: #4c4546;
+  --color-inverse-surface: #303031;
+  --color-inverse-on-surface: #f2f0f0;
+  --color-outline: #7e7576;
+  --color-outline-variant: #cfc4c5;
+  --color-surface-tint: #5e5e5e;
+
+  --color-primary: #000000;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #1b1b1b;
+  --color-on-primary-container: #848484;
+  --color-inverse-primary: #c6c6c6;
+  --color-primary-fixed: #e2e2e2;
+  --color-primary-fixed-dim: #c6c6c6;
+  --color-on-primary-fixed: #1b1b1b;
+  --color-on-primary-fixed-variant: #474747;
+
+  --color-secondary: #5e5f5c;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #e0e0dc;
+  --color-on-secondary-container: #626360;
+  --color-secondary-fixed: #e3e2df;
+  --color-secondary-fixed-dim: #c7c6c3;
+  --color-on-secondary-fixed: #1b1c1a;
+  --color-on-secondary-fixed-variant: #464744;
+
+  --color-tertiary: #000000;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #1c1b1b;
+  --color-on-tertiary-container: #858383;
+  --color-tertiary-fixed: #e5e2e1;
+  --color-tertiary-fixed-dim: #c8c6c5;
+  --color-on-tertiary-fixed: #1c1b1b;
+  --color-on-tertiary-fixed-variant: #474746;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  /* Font families */
+  --font-hero-display: "Archivo", sans-serif;
+  --font-hero-display-mobile: "Archivo", sans-serif;
+  --font-headline-lg: "Archivo", sans-serif;
+  --font-headline-sm: "Archivo", sans-serif;
+  --font-body-md: "Archivo", sans-serif;
+  --font-label-mono: "Inter", sans-serif;
+  --font-ui-text: "Inter", sans-serif;
+  --font-sub-description: "Inter", sans-serif;
+
+  /* Font sizes (with line-height / tracking / weight baked in) */
+  --text-hero-display: 174px;
+  --text-hero-display--line-height: 0.9;
+  --text-hero-display--letter-spacing: -0.02em;
+  --text-hero-display--font-weight: 800;
+
+  --text-hero-display-mobile: 64px;
+  --text-hero-display-mobile--line-height: 60px;
+  --text-hero-display-mobile--letter-spacing: -0.04em;
+  --text-hero-display-mobile--font-weight: 800;
+
+  --text-headline-lg: 58px;
+  --text-headline-lg--line-height: 64px;
+  --text-headline-lg--letter-spacing: -0.02em;
+  --text-headline-lg--font-weight: 800;
+
+  --text-headline-sm: 24px;
+  --text-headline-sm--line-height: 32px;
+  --text-headline-sm--font-weight: 600;
+
+  --text-body-md: 18px;
+  --text-body-md--line-height: 28px;
+  --text-body-md--font-weight: 400;
+
+  --text-sub-description: 22px;
+  --text-sub-description--line-height: 32px;
+  --text-sub-description--font-weight: 400;
+
+  --text-label-mono: 16px;
+  --text-label-mono--line-height: 24px;
+  --text-label-mono--font-weight: 500;
+
+  --text-form-input: 16px;
+  --text-form-input--line-height: 24px;
+  --text-form-input--font-weight: 400;
+
+  /* Spacing scale */
+  --spacing-margin-page: 4rem;
+  --spacing-margin-mobile: 1.5rem;
+  --spacing-gutter-grid: 2rem;
+  --spacing-section-gap: 8rem;
+  --spacing-stack-sm: 0.75rem;
+  --spacing-stack-md: 1.5rem;
+
+  /* Radius scale */
+  --radius: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+--------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  background-color: var(--color-canvas);
+  position: relative;
+}
+
+.material-symbols-outlined {
+  /* Self-hosted via @fontsource-variable/material-symbols-outlined, which
+     registers the family under this "… Variable" name. */
+  font-family: "Material Symbols Outlined Variable";
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  vertical-align: middle;
+}
+
+/* ---------------------------------------------------------------------------
+   Typewriter cursor
+--------------------------------------------------------------------------- */
+.typewriter-cursor::after {
+  content: "|";
+  margin-left: 4px;
+  color: currentColor;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .typewriter-cursor::after {
+    animation: blink 1s step-end infinite;
+  }
+}
+
+@keyframes blink {
+  from,
+  to {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Post body — minimal article typography for rendered Markdown.
+   No typography plugin installed, so style the raw elements directly.
+--------------------------------------------------------------------------- */
+.post-body {
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--color-on-background);
+}
+
+.post-body > * + * {
+  margin-top: 1.25em;
+}
+
+.post-body h1,
+.post-body h2,
+.post-body h3 {
+  font-family: "Archivo", sans-serif;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-top: 2em;
+}
+
+.post-body h2 {
+  font-size: 1.75rem;
+}
+
+.post-body h3 {
+  font-size: 1.35rem;
+}
+
+.post-body a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.post-body ul,
+.post-body ol {
+  padding-left: 1.5em;
+}
+
+.post-body ul {
+  list-style: disc;
+}
+
+.post-body ol {
+  list-style: decimal;
+}
+
+.post-body li + li {
+  margin-top: 0.4em;
+}
+
+.post-body blockquote {
+  border-left: 3px solid var(--color-outline-variant);
+  padding-left: 1em;
+  font-style: italic;
+  opacity: 0.85;
+}
+
+.post-body code {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.9em;
+  background-color: var(--color-surface-container);
+  padding: 0.15em 0.4em;
+  border-radius: var(--radius);
+}
+
+.post-body pre {
+  background-color: var(--color-inverse-surface);
+  color: var(--color-inverse-on-surface);
+  padding: 1.25em;
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+}
+
+.post-body pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+
+.post-body img {
+  border-radius: var(--radius-lg);
+}

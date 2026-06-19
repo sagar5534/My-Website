@@ -1,0 +1,36 @@
+---
+import { getCollection } from "astro:content";
+import PostCard from "./PostCard.astro";
+
+// Single source of truth: the homepage grid shows featured entries from the
+// posts collection (newest first), so it stays in sync with /blog.
+const featured = (
+  await getCollection("posts", (e) => e.data.featured && !e.data.draft)
+).sort((a, b) => (b.data.date?.getTime() ?? 0) - (a.data.date?.getTime() ?? 0));
+---
+
+<section
+  id="works"
+  class="px-margin-mobile md:px-margin-page py-section-gap border-t border-outline-variant"
+>
+  <div class="max-w-7xl mx-auto">
+    <div
+      class="flex flex-col items-start gap-4 md:flex-row md:items-end md:justify-between mb-16"
+    >
+      <div>
+        <h2 class="font-headline-lg text-headline-lg">Featured<br />Projects</h2>
+      </div>
+      <a
+        class="flex items-center gap-2 font-ui-text text-[16px] font-bold group"
+        href="/blog"
+      >
+        <span class="border-b-2 border-transparent group-hover:border-on-background">View All Work</span>
+        <span class="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform">north_east</span>
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {featured.map((post) => <PostCard post={post} />)}
+    </div>
+  </div>
+</section>
