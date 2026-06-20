@@ -1,0 +1,8 @@
+{
+  // https://developers.cloudflare.com/workers/static-assets/
+  "name": "sagarp-site",
+  "compatibility_date": "2026-06-20",
+  "assets": {
+    "directory": "./dist"
+  }
+}

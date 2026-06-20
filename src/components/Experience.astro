@@ -1,41 +1,43 @@
 ---
 const companies = [
   {
-    name: "Stitch AI",
+    name: "PointClickCare",
     roles: [
       {
-        title: "Senior Frontend Engineer",
-        date: "Jan 2024 — Present",
+        title: "Senior Software Engineer",
+        date: "Feb 2025 — Present",
         description:
-          "Architecting scalable UI systems and leading the development of collaborative design tools.",
+          "Building scalable microservices and RESTful APIs for dynamic data visualization widgets that retrieve real-time health information for over 2 million patients, using Java, SQL, and TypeScript. Cut QA testing time by 40% with a browser-based test automation framework, and serve as scrum master facilitating daily standups, sprint planning, and code reviews.",
       },
-      {
-        title: "Frontend Engineer",
-        date: "Jan 2023 — Dec 2023",
-        description:
-          "Built core component libraries and optimized performance for the primary design editor.",
-      },
-    ],
-  },
-  {
-    name: "Quantum Labs",
-    roles: [
-      {
-        title: "Product Engineer",
-        date: "June 2021 — Dec 2022",
-        description:
-          "Developed high-performance dashboard interfaces and optimized core rendering pipelines.",
-      },
-    ],
-  },
-  {
-    name: "Nebula Studio",
-    roles: [
       {
         title: "Software Engineer",
-        date: "Aug 2019 — May 2021",
-        description:
-          "Focused on minimalist web architectures and fluid motion design for client portfolios.",
+        date: "4 years",
+        description: "",
+      },
+      {
+        title: "Software Engineering Intern",
+        date: "8 months",
+        description: "",
+      },
+    ],
+  },
+  {
+    name: "Agilis Networks",
+    roles: [
+      {
+        title: "Software Engineering Intern",
+        date: "4 months",
+        description: "",
+      },
+    ],
+  },
+  {
+    name: "City of Toronto",
+    roles: [
+      {
+        title: "Software Engineering Intern",
+        date: "4 months",
+        description: "",
       },
     ],
   },
@@ -70,9 +72,11 @@ const companies = [
                       {role.date}
                     </span>
                   </div>
-                  <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
-                    {role.description}
-                  </p>
+                  {role.description && (
+                    <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                      {role.description}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
