@@ -27,7 +27,7 @@ const navLinks: NavLink[] = [
     class="px-margin-mobile md:px-margin-page py-section-gap"
   >
     <div class="max-w-7xl mx-auto">
-      <div class="mb-16">
+      <div class="reveal mb-16">
         <h1 class="font-headline-lg text-headline-lg">Projects</h1>
         <p class="font-body-md text-body-md opacity-70 mt-4 max-w-xl">
           Selected engineering and design work, most recent first.
@@ -36,7 +36,7 @@ const navLinks: NavLink[] = [
 
       {
         projects.length > 0 ? (
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="reveal grid grid-cols-1 md:grid-cols-2 gap-8">
             {projects.map((post) => (
               <PostCard post={post} />
             ))}
@@ -55,7 +55,7 @@ const navLinks: NavLink[] = [
     class="px-margin-mobile md:px-margin-page py-section-gap"
   >
     <div class="max-w-7xl mx-auto">
-      <div class="mb-16">
+      <div class="reveal mb-16">
         <h2 class="font-headline-lg text-headline-lg">Writing</h2>
         <p class="font-body-md text-body-md opacity-70 mt-4 max-w-xl">
           Notes on engineering, design, and the space in between.
@@ -64,7 +64,7 @@ const navLinks: NavLink[] = [
 
       {
         writing.length > 0 ? (
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="reveal grid grid-cols-1 md:grid-cols-2 gap-8">
             {writing.map((post) => (
               <PostCard post={post} />
             ))}

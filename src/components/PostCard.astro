@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import { coverTransitionName } from "../lib/transitions";
 
 interface Props {
   post: CollectionEntry<"posts">;
@@ -11,6 +12,10 @@ const { title, subtitle, date, image, repo } = post.data;
 // A repo entry links out to GitHub; otherwise to the internal write-up page.
 const href = repo ?? `/blog/${post.id}`;
 const external = Boolean(repo);
+
+// Internal posts morph their cover into the post's hero image on navigation.
+// External (GitHub) links leave the site, so they get no transition name.
+const transitionName = external ? undefined : coverTransitionName(post.id);
 
 const dateLabel = date?.toLocaleDateString("en-US", {
   year: "numeric",
@@ -28,7 +33,8 @@ const dateLabel = date?.toLocaleDateString("en-US", {
   {
     image ? (
       <img
-        class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+        class="w-full h-full object-cover rounded-3xl transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+        style={transitionName && `view-transition-name: ${transitionName}`}
         src={image}
         alt={title}
         width="1280"

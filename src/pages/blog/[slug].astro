@@ -3,6 +3,7 @@ import { getCollection, render } from "astro:content";
 import type { GetStaticPaths } from "astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Icon from "../../components/Icon.astro";
+import { coverTransitionName } from "../../lib/transitions";
 
 // Only entries without a `repo` get an internal page; repo entries link out,
 // so generating a page for them would create dead routes.
@@ -32,15 +33,33 @@ const dateLabel = date?.toLocaleDateString("en-US", {
   type="article"
   showNav={false}
 >
-  <article class="px-margin-mobile md:px-margin-page py-section-gap">
-    <header class="max-w-3xl mx-auto mb-12">
+  <!-- Wayfinding: where you are (Sagar), and the way back out. Same material
+       and position as the site nav, so it reads as the same layer. -->
+  <nav
+    aria-label="Post"
+    class="fixed top-0 inset-x-0 z-50 flex justify-center px-4 pt-4 pointer-events-none"
+  >
+    <div
+      class="material pointer-events-auto rounded-full flex items-center gap-1 p-1"
+    >
       <a
         href="/blog"
-        class="inline-flex items-center gap-1 font-ui-text text-caption font-medium opacity-60 hover:opacity-100 transition-opacity mb-8"
+        class="press flex items-center gap-1.5 h-10 pl-3 pr-4 rounded-full font-ui-text text-ui font-medium text-ink-muted hover:text-ink hover:bg-ink/8 transition-colors"
       >
         <Icon name="arrow-left" class="size-4" />
         Projects &amp; Writing
       </a>
+      <span class="h-5 w-px bg-line" aria-hidden="true"></span>
+      <a
+        href="/"
+        class="press flex items-center h-10 px-4 rounded-full font-headline-sm text-title font-bold text-ink hover:bg-ink/8 transition-colors"
+        >Sagar</a
+      >
+    </div>
+  </nav>
+
+  <article class="px-margin-mobile md:px-margin-page pt-32 md:pt-40 pb-section-gap">
+    <header class="max-w-3xl mx-auto mb-12">
       {
         dateLabel && (
           <span class="block font-ui-text text-caption font-medium opacity-60 mb-3">
@@ -65,7 +84,8 @@ const dateLabel = date?.toLocaleDateString("en-US", {
           height="720"
           loading="eager"
           decoding="async"
-          class="w-full max-w-4xl mx-auto aspect-video object-cover rounded-xl mb-12"
+          class="w-full max-w-4xl mx-auto aspect-video object-cover rounded-3xl mb-12"
+          style={`view-transition-name: ${coverTransitionName(post.id)}`}
         />
       )
     }

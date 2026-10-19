@@ -371,3 +371,60 @@ button {
 .post-body img {
   border-radius: var(--radius-lg);
 }
+
+/* ---------------------------------------------------------------------------
+   Page transitions - native cross-document View Transitions (no client
+   router, so page scripts keep their normal lifecycle). A project card's
+   cover and the post's hero image share a view-transition-name (see
+   src/lib/transitions.ts), so the image morphs card -> post, and back again
+   on Back: the same path in both directions. Browsers without support just
+   navigate normally.
+--------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-group(*) {
+    animation-duration: 450ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 250ms;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Scroll reveal - content fades and rises 12px as it enters the viewport.
+   Scroll-driven (no JS, runs off the main thread), and only over the first
+   part of entry so content is fully settled well before it's read. Reduced
+   motion keeps the fade and drops the movement.
+--------------------------------------------------------------------------- */
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 60%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      animation-name: reveal-fade;
+    }
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}
+
+@keyframes reveal-fade {
+  from {
+    opacity: 0;
+  }
+}
