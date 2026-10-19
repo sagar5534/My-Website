@@ -13,237 +13,249 @@ const {
   brand = "Sagar",
   brandHref = "/#home",
 } = Astro.props;
+
+// One look for a link in either layout. `aria-current` (set by the scroll-spy
+// below) is the single source of truth for "you are here".
+const linkBase =
+  "nav-link press font-ui-text font-medium text-ink-muted hover:text-ink aria-[current]:text-ink";
 ---
 
+<!--
+  --p (0 closed, 1 open) is set on this element by the script below and drives
+  the menu, the scrim and the hamburger-to-close icon. The pill and the menu
+  panel are siblings in a column so the panel can sit under the pill without
+  any transform-based centering (which would skew offset measurements).
+-->
 <nav
-  class="fixed top-0 left-0 right-0 z-50 flex justify-center items-start pointer-events-none"
+  id="site-nav"
+  aria-label="Primary"
+  class="fixed top-0 inset-x-0 z-50 flex flex-col items-center px-4 pt-4 pointer-events-none"
 >
+  <!-- Dims the page behind the open menu and doubles as the tap-outside target. -->
   <div
-    id="nav-bubble"
-    data-open="false"
-    class="bg-primary shadow-2xl pointer-events-auto overflow-hidden box-border
-           mt-4 w-fit px-6 py-3 rounded-full
-           flex flex-col md:flex-row md:items-center md:gap-8
-           md:!mt-4 md:!w-fit md:!rounded-full md:!px-6 md:!py-3"
+    id="nav-scrim"
+    class="nav-scrim fixed inset-0 -z-10 bg-black/20 dark:bg-black/50 pointer-events-none md:hidden"
+    aria-hidden="true"
   >
-    <div class="flex items-center justify-between gap-8 w-full md:w-auto">
-      <a
-        class="font-headline-sm text-[20px] font-bold text-on-primary"
-        href={brandHref}>{brand}</a
-      >
-      <button
-        id="nav-toggle"
-        class="md:hidden text-on-primary"
-        aria-label="Open menu"
-        aria-expanded="false"
-        aria-controls="nav-menu"
-      >
-        <span id="nav-toggle-icon" class="material-symbols-outlined">menu</span>
-      </button>
+  </div>
+
+  <div
+    class="material pointer-events-auto rounded-full flex items-center gap-6 md:gap-3 pl-5 pr-1 md:pr-1.5 py-1 md:py-1.5"
+  >
+    <a
+      class="press font-headline-sm text-title font-bold text-ink rounded-full"
+      href={brandHref}>{brand}</a
+    >
+
+    <!-- Desktop: inline links with a sliding "you are here" capsule. -->
+    <div id="nav-links" class="relative hidden md:flex items-center gap-1">
+      <span
+        id="nav-indicator"
+        aria-hidden="true"
+        class="absolute top-0 bottom-0 left-0 rounded-full bg-ink/8 opacity-0 transition-opacity duration-200 pointer-events-none"
+      ></span>
+      {
+        links.map((link) => (
+          <a
+            class:list={[linkBase, "relative text-ui px-4 py-1.5 rounded-full"]}
+            href={link.href}
+          >
+            {link.label}
+          </a>
+        ))
+      }
     </div>
 
-    <!-- Mobile: collapsible panel. Desktop: inline row. -->
-    <div
-      id="nav-menu"
-      style="grid-template-rows: minmax(0, 0fr);"
-      class="grid opacity-0 transition-[grid-template-rows,opacity] duration-[600ms] ease-[cubic-bezier(0.65,0,0.35,1)]
-             md:flex md:items-center md:gap-6 md:!opacity-100"
+    <!-- Mobile: 44x44 toggle; the negative margin keeps the pill compact. -->
+    <button
+      id="nav-toggle"
+      class="press md:hidden text-ink size-11 -my-1 grid place-items-center rounded-full focus-visible:outline-offset-[-2px]"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="nav-menu"
     >
-      <div class="min-h-0 overflow-hidden flex flex-col items-center gap-6 pt-6 md:pt-0 md:flex-row md:overflow-visible">
-        {
-          links.map((link, i) => (
-            <a
-              class:list={[
-                "nav-link font-ui-text text-[20px] md:text-[16px] hover:opacity-100 transition-all active:scale-95",
-                i === links.length - 1
-                  ? "font-semibold text-on-primary"
-                  : "font-medium text-on-primary-container opacity-70",
-              ]}
-              href={link.href}
-            >
-              {link.label}
-            </a>
-          ))
-        }
-      </div>
-    </div>
+      <svg
+        class="size-5"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <rect
+          class="nav-bar nav-bar-top"
+          x="3"
+          y="6.25"
+          width="14"
+          height="1.5"
+          rx="0.75"></rect>
+        <rect
+          class="nav-bar nav-bar-bottom"
+          x="3"
+          y="12.25"
+          width="14"
+          height="1.5"
+          rx="0.75"></rect>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile menu. Closed = invisible + inert (not focusable, not announced). -->
+  <div
+    id="nav-menu"
+    inert
+    class="nav-menu material invisible pointer-events-auto md:hidden mt-2 w-full max-w-80 rounded-3xl p-2 flex flex-col"
+  >
+    {
+      links.map((link) => (
+        <a
+          class:list={[
+            linkBase,
+            "block text-title px-4 py-3 rounded-2xl aria-[current]:bg-ink/8 aria-[current]:font-semibold",
+          ]}
+          href={link.href}
+        >
+          {link.label}
+        </a>
+      ))
+    }
   </div>
 </nav>
 
 <script>
-  const bubble = document.getElementById("nav-bubble");
-  const menu = document.getElementById("nav-menu");
-  const toggle = document.getElementById("nav-toggle");
-  const icon = document.getElementById("nav-toggle-icon");
+  import { createSpring } from "../lib/spring";
 
-  const DURATION = 600;
-  const EASING = "cubic-bezier(0.65, 0, 0.35, 1)"; // ease-in-out, even growth
-  let animating = false;
+  const nav = document.getElementById("site-nav")!;
+  const menu = document.getElementById("nav-menu")!;
+  const toggle = document.getElementById("nav-toggle")!;
+  const scrim = document.getElementById("nav-scrim")!;
+  const linksEl = document.getElementById("nav-links")!;
+  const indicator = document.getElementById("nav-indicator")!;
 
-  // Closed pill (mt-4, px-6 py-3) vs. open full-width bar (mt-0, larger
-  // padding). Border-radius is animated separately so the top corners can
-  // flatten earlier than the box finishes growing — see animateBubble.
-  const CLOSED = {
-    marginTop: "1rem",
-    paddingLeft: "1.5rem",
-    paddingRight: "1.5rem",
-    paddingTop: "0.75rem",
-    paddingBottom: "0.75rem",
-  };
-  const OPEN = {
-    marginTop: "0px",
-    paddingLeft: "1.5rem", // px-margin-mobile
-    paddingRight: "1.5rem",
-    paddingTop: "1.5rem",
-    paddingBottom: "1.5rem",
-  };
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const desktop = window.matchMedia("(min-width: 768px)");
 
-  const BOTTOM_OPEN = "1.5rem"; // panel bottom radius when docked
-  const RADIUS_EASING = "cubic-bezier(0.5, 0, 0.1, 1)"; // front-loaded
+  // ------------------------------------------------------------------------
+  // Mobile menu: one spring on progress p in [0, 1].
+  //
+  // Interruptible by construction: a tap only changes the spring's *target*.
+  // The value and velocity carry through, so grabbing a half-open menu and
+  // closing it reverses smoothly from where it is, never from where it was
+  // going. Critically damped (no overshoot): a menu that merely appears
+  // shouldn't bounce - bounce is for gestures that carried momentum.
+  // ------------------------------------------------------------------------
+  let open = false;
 
-  // A `9999px` radius on the short pill is clamped by the browser to half the
-  // height, so animating 9999px -> 0 shows no visible change until the value
-  // finally drops below that clamp near the very end (the "jump"). Instead we
-  // animate from a concrete pixel radius equal to the pill's actual rounding
-  // (half its height) so every interpolation step is visible.
-  function buildRadiusFrames(open: boolean, pillRadius: number) {
-    const pill = `${pillRadius}px`;
-    const docked = {
-      borderTopLeftRadius: "0px",
-      borderTopRightRadius: "0px",
-      borderBottomLeftRadius: BOTTOM_OPEN,
-      borderBottomRightRadius: BOTTOM_OPEN,
-    };
-    const rounded = {
-      borderTopLeftRadius: pill,
-      borderTopRightRadius: pill,
-      borderBottomLeftRadius: pill,
-      borderBottomRightRadius: pill,
-    };
-    return open
-      ? // Top corners flatten by ~55%, then hold while the box keeps growing.
-        [
-          { offset: 0, ...rounded },
-          { offset: 0.55, ...docked },
-          { offset: 1, ...docked },
-        ]
-      : // Hold the docked shape, then round back into the pill near the end.
-        [
-          { offset: 0, ...docked },
-          { offset: 0.45, ...docked },
-          { offset: 1, ...rounded },
-        ];
+  function render(p: number) {
+    nav.style.setProperty("--p", p.toFixed(4));
+    // Fully closed -> take it out of the tab order and the a11y tree.
+    const closed = spring.target === 0 && p < 0.002;
+    menu.classList.toggle("invisible", closed);
+    menu.inert = closed;
+    scrim.classList.toggle("pointer-events-none", !open);
+    scrim.classList.toggle("pointer-events-auto", open);
   }
 
-  function isDesktop() {
-    return window.matchMedia("(min-width: 768px)").matches;
+  const spring = createSpring(0, render, { response: 0.35, damping: 1 });
+
+  function syncMotionPreference() {
+    // Reduced motion: still responsive, but a short cross-fade (see CSS).
+    spring.options.response = reduceMotion.matches ? 0.15 : 0.35;
+  }
+  syncMotionPreference();
+  reduceMotion.addEventListener("change", syncMotionPreference);
+
+  // Grow from the toggle button, not from the panel's centre: the panel
+  // visibly belongs to the control that opened it, and closes back into it.
+  function anchorOrigin() {
+    const t = toggle.getBoundingClientRect();
+    const n = nav.getBoundingClientRect();
+    // offsetLeft is layout position, so it's unaffected by the in-flight scale.
+    const x = t.left + t.width / 2 - n.left - menu.offsetLeft;
+    menu.style.setProperty("--origin-x", `${x}px`);
   }
 
-  function setMenuShown(open: boolean) {
-    if (!menu) return;
-    menu.style.gridTemplateRows = open ? "minmax(0, 1fr)" : "minmax(0, 0fr)";
-    menu.classList.toggle("opacity-100", open);
-    menu.classList.toggle("opacity-0", !open);
+  function setOpen(next: boolean, { restoreFocus = false } = {}) {
+    open = next;
+    toggle.setAttribute("aria-expanded", String(next));
+    toggle.setAttribute("aria-label", next ? "Close menu" : "Open menu");
+    if (next) anchorOrigin();
+    spring.to(next ? 1 : 0);
+    if (!next && restoreFocus) toggle.focus();
   }
 
-  // Half the closed-pill height = its visual corner radius. Cached when we
-  // see the bubble closed so we still have it while animating a close.
-  let pillRadius = 24;
-
-  function animateBubble(open: boolean) {
-    if (!bubble) return;
-
-    const startRect = bubble.getBoundingClientRect();
-    // When opening, the bubble is currently closed -> capture its true radius.
-    if (open) pillRadius = startRect.height / 2;
-
-    // FLIP: capture the current pixel width, flip to the destination
-    // resting layout, measure the destination width, then animate between
-    // the two measured values so width interpolates smoothly.
-    const startWidth = startRect.width;
-    bubble.dataset.open = String(open);
-    applyResting(open);
-    const endWidth = bubble.getBoundingClientRect().width;
-
-    const from = open ? CLOSED : OPEN;
-    const to = open ? OPEN : CLOSED;
-
-    animating = true;
-    const anim = bubble.animate(
-      [
-        { width: `${startWidth}px`, ...from },
-        { width: `${endWidth}px`, ...to },
-      ],
-      { duration: DURATION, easing: EASING, fill: "backwards" },
-    );
-
-    // Border-radius runs in parallel on a front-loaded curve so the top
-    // corners flatten into the screen edge early in the growth.
-    bubble.animate(buildRadiusFrames(open, pillRadius), {
-      duration: DURATION,
-      easing: RADIUS_EASING,
-      fill: "backwards",
-    });
-
-    anim.onfinish = () => {
-      animating = false;
-      anim.cancel(); // drop the inline-style hold; resting classes own layout
-    };
-  }
-
-  function applyResting(open: boolean) {
-    if (!bubble) return;
-    bubble.classList.toggle("w-full", open);
-    bubble.classList.toggle("w-fit", !open);
-    // Open: square top edge, rounded bottom corners. Closed: full pill.
-    bubble.classList.toggle("rounded-t-none", open);
-    bubble.classList.toggle("rounded-b-3xl", open);
-    bubble.classList.toggle("rounded-full", !open);
-    bubble.classList.toggle("mt-0", open);
-    bubble.classList.toggle("mt-4", !open);
-    bubble.classList.toggle("py-6", open);
-    bubble.classList.toggle("py-3", !open);
-  }
-
-  function setOpen(open: boolean) {
-    if (!bubble || !menu || !toggle || !icon || animating) return;
-    toggle.setAttribute("aria-expanded", String(open));
-    toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-    icon.textContent = open ? "close" : "menu";
-    setMenuShown(open);
-    animateBubble(open);
-  }
-
-  toggle?.addEventListener("click", () => {
-    setOpen(bubble?.dataset.open !== "true");
+  toggle.addEventListener("click", () => setOpen(!open));
+  scrim.addEventListener("click", () => setOpen(false));
+  menu.addEventListener("click", (e) => {
+    if ((e.target as Element).closest("a")) setOpen(false);
   });
-
-  menu?.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => {
-      if (bubble?.dataset.open === "true") setOpen(false);
-    });
-  });
-
-  window.matchMedia("(min-width: 768px)").addEventListener("change", (e) => {
-    if (e.matches && bubble?.dataset.open === "true") {
-      // Snap closed without animation when jumping to desktop layout.
-      setMenuShown(false);
-      bubble!.dataset.open = "false";
-      applyResting(false);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && open) {
+      setOpen(false, { restoreFocus: menu.contains(document.activeElement) });
     }
   });
-</script>
+  window.addEventListener("resize", () => open && anchorOrigin());
 
-<script>
-  // --------------------------------------------------------------------------
-  // Scroll-spy: underline the nav link whose section is in view. Lives in the
-  // Nav component so every page that renders it (home, /blog) gets the
-  // behaviour. Links match sections via href.includes(id), so on-page anchors
-  // (#projects) and homepage-rooted ones (/#works) both resolve.
-  // --------------------------------------------------------------------------
+  // Crossing into the desktop layout: snap closed, no animation.
+  desktop.addEventListener("change", (e) => {
+    if (e.matches && (open || spring.value > 0)) {
+      open = false;
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-label", "Open menu");
+      spring.set(0);
+    }
+    moveIndicator(false);
+  });
+
+  // ------------------------------------------------------------------------
+  // Desktop indicator: a capsule that springs between links (position and
+  // width are separate springs, like an iOS segmented control).
+  // ------------------------------------------------------------------------
+  let indicatorPlaced = false;
+
+  const indX = createSpring(
+    0,
+    (x) => (indicator.style.transform = `translateX(${x}px)`),
+    { response: 0.4, damping: 1, restDelta: 0.05 },
+  );
+  const indW = createSpring(
+    0,
+    (w) => (indicator.style.width = `${w}px`),
+    { response: 0.4, damping: 1, restDelta: 0.05 },
+  );
+
+  function moveIndicator(animate = true) {
+    if (!desktop.matches) return;
+    const active = linksEl.querySelector<HTMLAnchorElement>(
+      "a[aria-current]",
+    );
+    if (!active) {
+      indicator.classList.add("opacity-0");
+      indicatorPlaced = false; // re-enter without sweeping in from old spot
+      return;
+    }
+    const x = active.offsetLeft;
+    const w = active.offsetWidth;
+    if (!indicatorPlaced || !animate || reduceMotion.matches) {
+      indX.set(x);
+      indW.set(w);
+      indicatorPlaced = true;
+    } else {
+      indX.to(x);
+      indW.to(w);
+    }
+    indicator.classList.remove("opacity-0");
+  }
+
+  // Keep the capsule aligned if fonts load late or the window resizes.
+  new ResizeObserver(() => moveIndicator(false)).observe(linksEl);
+
+  // ------------------------------------------------------------------------
+  // Scroll-spy: mark the link whose section is in view. Lives in the Nav so
+  // every page that renders it (home, /blog) gets the behaviour. Links match
+  // sections via href.includes(id), so on-page anchors (#projects) and
+  // homepage-rooted ones (/#works) both resolve.
+  // ------------------------------------------------------------------------
   const sections = document.querySelectorAll("section[id]");
-  const spyLinks =
-    document.querySelectorAll<HTMLAnchorElement>("nav a.nav-link");
+  const spyLinks = nav.querySelectorAll<HTMLAnchorElement>("a.nav-link");
 
   function updateActiveLink() {
     let current = "";
@@ -264,19 +276,19 @@ const {
     }
 
     spyLinks.forEach((link) => {
-      link.classList.remove("border-b-2", "border-on-primary");
-      link.classList.add("opacity-70");
       const href = link.getAttribute("href") ?? "";
       if (current && href.includes(current)) {
-        link.classList.add("border-b-2", "border-on-primary");
-        link.classList.remove("opacity-70");
+        link.setAttribute("aria-current", "location");
+      } else {
+        link.removeAttribute("aria-current");
       }
     });
+    moveIndicator();
   }
 
-  // Coalesce scroll bursts into one update per frame — updateActiveLink reads
+  // Coalesce scroll bursts into one update per frame - updateActiveLink reads
   // layout (offsetTop), so running it on every raw scroll event would force
-  // repeated reflows. Behaviour is identical.
+  // repeated reflows.
   let ticking = false;
   window.addEventListener("scroll", () => {
     if (ticking) return;

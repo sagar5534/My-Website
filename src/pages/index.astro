@@ -22,57 +22,56 @@ import Connect from "../components/Connect.astro";
 
 <script>
   // ----------------------------------------------------------------------
-  // Typewriter effect
+  // Rotating role. The h1 text is static (see Hero.astro); only the visible,
+  // aria-hidden span changes. Each swap is a short blur + fade + rise rather
+  // than character-by-character typing: nothing reflows mid-word and there is
+  // no endlessly blinking cursor.
   // ----------------------------------------------------------------------
-  const words = [
-    "SOFTWARE ENGINEER",
-    "FULL STACK DEVELOPER",
-    "INTERFACE DESIGNER",
-  ];
-  const typeSpeed = 150;
-  const deleteSpeed = 100;
-  const pauseTime = 2000;
+  const el = document.getElementById("hero-role");
+  const roles: string[] = JSON.parse(el?.dataset.roles ?? "[]");
 
-  let wordIndex = 0;
-  let charIndex = 0;
-  let isDeleting = false;
+  const HOLD_MS = 2800;
+  const OUT = { duration: 260, easing: "cubic-bezier(0.4, 0, 1, 1)", fill: "forwards" } as const;
+  const IN = { duration: 520, easing: "cubic-bezier(0.22, 1, 0.36, 1)", fill: "backwards" } as const;
 
-  const typewriterElement = document.getElementById("typewriter-text");
-
-  // Respect reduced-motion: show a single word statically, no animation loop.
   const reduceMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)",
   ).matches;
 
-  function type() {
-    if (!typewriterElement) return;
-    const currentWord = words[wordIndex];
+  let index = 0;
 
-    if (isDeleting) {
-      typewriterElement.textContent = currentWord.substring(0, charIndex - 1);
-      charIndex--;
-    } else {
-      typewriterElement.textContent = currentWord.substring(0, charIndex + 1);
-      charIndex++;
-    }
+  async function rotate() {
+    if (!el) return;
+    // Don't burn cycles (or swap text) while the tab is in the background.
+    if (document.hidden) return schedule();
 
-    let nextActionSpeed = isDeleting ? deleteSpeed : typeSpeed;
+    await el.animate(
+      [
+        { opacity: 1, filter: "blur(0px)", transform: "translateY(0)" },
+        { opacity: 0, filter: "blur(10px)", transform: "translateY(-0.08em)" },
+      ],
+      OUT,
+    ).finished;
 
-    if (!isDeleting && charIndex === currentWord.length) {
-      isDeleting = true;
-      nextActionSpeed = pauseTime;
-    } else if (isDeleting && charIndex === 0) {
-      isDeleting = false;
-      wordIndex = (wordIndex + 1) % words.length;
-      nextActionSpeed = 500;
-    }
+    index = (index + 1) % roles.length;
+    el.textContent = roles[index];
 
-    setTimeout(type, nextActionSpeed);
+    // Cancel the "forwards" hold from the exit animation, then play the entrance.
+    el.getAnimations().forEach((a) => a.cancel());
+    el.animate(
+      [
+        { opacity: 0, filter: "blur(10px)", transform: "translateY(0.08em)" },
+        { opacity: 1, filter: "blur(0px)", transform: "translateY(0)" },
+      ],
+      IN,
+    );
+    schedule();
   }
 
-  if (reduceMotion) {
-    if (typewriterElement) typewriterElement.textContent = words[0];
-  } else {
-    type();
+  function schedule() {
+    setTimeout(rotate, HOLD_MS);
   }
+
+  // Reduced motion: keep the first role, static. No rotation at all.
+  if (el && roles.length > 1 && !reduceMotion) schedule();
 </script>

@@ -11,11 +11,11 @@ export interface NavLink {
 export const navLinks: NavLink[] = [
   { label: "About", href: "/#about" },
   { label: "Experience", href: "/#experience" },
-  { label: "Works", href: "/#works" },
+  { label: "Projects", href: "/#projects" },
   { label: "Connect", href: "/#contact" },
 ];
 
 export const footerLinks: NavLink[] = [
   ...navLinks,
-  { label: "Blog", href: "/blog" },
+  { label: "Writing", href: "/blog#writing" },
 ];

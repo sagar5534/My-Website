@@ -16,12 +16,12 @@ const writing = published.filter((e) => e.data.type === "blog").sort(byDate);
 // Blog-page nav: anchors to the on-page sections, plus Connect on the homepage.
 const navLinks: NavLink[] = [
   { label: "Projects", href: "#projects" },
-  { label: "Blogs", href: "#blogs" },
+  { label: "Writing", href: "#writing" },
   { label: "Connect", href: "/#contact" },
 ];
 ---
 
-<BaseLayout title="Writing & Work | Sagar" navLinks={navLinks}>
+<BaseLayout title="Projects & Writing | Sagar" navLinks={navLinks}>
   <section
     id="projects"
     class="px-margin-mobile md:px-margin-page py-section-gap"
@@ -43,7 +43,7 @@ const navLinks: NavLink[] = [
           </div>
         ) : (
           <p class="font-body-md text-body-md opacity-70">
-            Nothing published yet — check back soon.
+            Nothing published yet. Check back soon.
           </p>
         )
       }
@@ -51,8 +51,8 @@ const navLinks: NavLink[] = [
   </section>
 
   <section
-    id="blogs"
-    class="px-margin-mobile md:px-margin-page py-section-gap border-t border-outline-variant"
+    id="writing"
+    class="px-margin-mobile md:px-margin-page py-section-gap"
   >
     <div class="max-w-7xl mx-auto">
       <div class="mb-16">
@@ -71,7 +71,7 @@ const navLinks: NavLink[] = [
           </div>
         ) : (
           <p class="font-body-md text-body-md opacity-70">
-            Nothing published yet — check back soon.
+            Nothing published yet. Check back soon.
           </p>
         )
       }

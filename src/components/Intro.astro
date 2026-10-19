@@ -1,14 +1,16 @@
 ---
+import Icon from "./Icon.astro";
+
 const portrait = "/profile.png";
 ---
 
 <section
   id="about"
-  class="px-margin-mobile md:px-margin-page py-section-gap border-y border-outline-variant bg-canvas"
+  class="px-margin-mobile md:px-margin-page py-section-gap"
 >
   <div class="max-w-7xl mx-auto flex flex-col md:flex-row gap-16 items-center">
     <div
-      class="w-full md:w-1/3 aspect-[4/5] rounded-xl overflow-hidden"
+      class="w-full md:w-1/3 aspect-[4/5] rounded-3xl overflow-hidden"
     >
       <img
         class="w-full h-full object-cover"
@@ -20,7 +22,7 @@ const portrait = "/profile.png";
       <h2 class="font-headline-lg text-headline-lg mb-stack-md">Hey! I'm Sagar.</h2>
       <div class="space-y-6 max-w-2xl">
         <p
-          class="font-body-md text-body-md leading-relaxed text-on-surface-variant"
+          class="font-body-md text-body-md text-ink-muted"
         >
           I'm a Senior Software Engineer at PointClickCare, building scalable
           microservices and RESTful APIs that power real-time data
@@ -28,18 +30,18 @@ const portrait = "/profile.png";
           TypeScript.
         </p>
         <p
-          class="font-body-md text-body-md leading-relaxed text-on-surface-variant"
+          class="font-body-md text-body-md text-ink-muted"
         >
-          I care about reliability and craft—whether that's cutting QA testing
+          I care about reliability and craft, whether that's cutting QA testing
           time by 40% with a browser-based automation framework, optimizing
           page load times, or facilitating sprint planning as a Certified
           ScrumMaster. I build software that's fast, secure, and easy to trust.
         </p>
         <div class="flex gap-4 pt-4">
-          <span class="text-outline-variant">/</span>
           <a
-            class="text-primary hover:underline font-ui-text text-[16px] font-bold"
-            href="#contact">GET IN TOUCH</a
+            class="group inline-flex items-center gap-1.5 font-ui-text text-ui font-semibold hover:underline underline-offset-4"
+            href="#contact"
+            >Get in touch<Icon name="arrow-up-right" class="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" /></a
           >
         </div>
       </div>

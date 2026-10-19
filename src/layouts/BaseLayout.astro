@@ -1,15 +1,10 @@
 ---
 import "../styles/global.css";
-// Self-hosted fonts (no third-party round-trips). Weights match the design
-// tokens in global.css: Archivo 400/700/800, Inter 400/500/600/700.
-import "@fontsource/archivo/400.css";
+// Self-hosted display font (no third-party round-trips). Archivo is only used
+// for the hero and section titles (800) and post headings (700); everything
+// else uses the system UI font stack from global.css.
 import "@fontsource/archivo/700.css";
 import "@fontsource/archivo/800.css";
-import "@fontsource/inter/400.css";
-import "@fontsource/inter/500.css";
-import "@fontsource/inter/600.css";
-import "@fontsource/inter/700.css";
-import "@fontsource-variable/material-symbols-outlined";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
 import SEO from "../components/SEO.astro";
@@ -49,11 +44,14 @@ const resolvedMainClass = mainClass ?? (showNav ? "pt-32" : "");
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f9f5f0" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0e0e10" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
     <SEO {title} {description} {image} {type} {person} />
   </head>
   <body
-    class="font-body-md text-on-background selection:bg-primary selection:text-on-primary"
+    class="font-body-md text-ink selection:bg-inverse selection:text-on-inverse"
   >
     {showNav && <Nav links={navLinks} />}
     <main class={resolvedMainClass}>

@@ -5,7 +5,7 @@ const companies = [
     roles: [
       {
         title: "Senior Software Engineer",
-        date: "Feb 2025 — Present",
+        date: "Feb 2025 - Present",
         description:
           "Building scalable microservices and RESTful APIs for dynamic data visualization widgets that retrieve real-time health information for over 2 million patients, using Java, SQL, and TypeScript. Cut QA testing time by 40% with a browser-based test automation framework, and serve as scrum master facilitating daily standups, sprint planning, and code reviews.",
       },
@@ -46,18 +46,18 @@ const companies = [
 
 <section
   id="experience"
-  class="px-margin-mobile md:px-margin-page py-section-gap border-t border-outline-variant"
+  class="px-margin-mobile md:px-margin-page py-section-gap"
 >
   <div class="max-w-7xl mx-auto">
     <div class="mb-16">
       <h2 class="font-headline-lg text-headline-lg">Experience</h2>
     </div>
-    <div class="divide-y divide-outline-variant">
+    <div class="divide-y divide-line">
       {
         companies.map((company) => (
           <div class="py-12 grid grid-cols-1 md:grid-cols-12 gap-8">
             <div class="md:col-span-4">
-              <h3 class="font-headline-sm text-headline-sm uppercase tracking-tight">
+              <h3 class="font-headline-sm text-headline-sm">
                 {company.name}
               </h3>
             </div>
@@ -65,15 +65,15 @@ const companies = [
               {company.roles.map((role) => (
                 <div>
                   <div class="flex flex-col md:flex-row justify-between items-start mb-4">
-                    <h4 class="font-ui-text text-[16px] font-bold uppercase">
+                    <h4 class="font-ui-text text-ui font-semibold">
                       {role.title}
                     </h4>
-                    <span class="font-ui-text text-[16px] font-medium opacity-60">
+                    <span class="font-ui-text text-ui font-medium opacity-60 tabular-nums">
                       {role.date}
                     </span>
                   </div>
                   {role.description && (
-                    <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                    <p class="font-body-md text-body-md text-ink-muted">
                       {role.description}
                     </p>
                   )}

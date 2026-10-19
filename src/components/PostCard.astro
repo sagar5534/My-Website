@@ -23,12 +23,12 @@ const dateLabel = date?.toLocaleDateString("en-US", {
   href={href}
   target={external ? "_blank" : undefined}
   rel={external ? "noopener noreferrer" : undefined}
-  class="relative aspect-video rounded-xl overflow-hidden group block"
+  class="card group relative isolate block aspect-video rounded-3xl overflow-hidden bg-fill"
 >
   {
     image ? (
       <img
-        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
         src={image}
         alt={title}
         width="1280"
@@ -37,20 +37,26 @@ const dateLabel = date?.toLocaleDateString("en-US", {
         decoding="async"
       />
     ) : (
-      <div class="w-full h-full bg-surface" />
+      // No cover image: a quiet tonal gradient, with the title set in ink.
+      <div class="w-full h-full bg-gradient-to-br from-fill to-fill-strong" />
     )
   }
   <div
-    class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6 text-on-primary"
+    class:list={[
+      "absolute inset-0 flex flex-col justify-end p-6 md:p-7",
+      image
+        ? "bg-gradient-to-t from-black/80 via-black/20 to-transparent text-white"
+        : "text-ink",
+    ]}
   >
     {
       dateLabel && (
-        <span class="font-ui-text text-[14px] font-medium opacity-70 mb-1">
+        <span class="font-ui-text text-caption font-medium opacity-70 mb-1">
           {dateLabel}
         </span>
       )
     }
-    <h3 class="font-headline-sm text-headline-sm uppercase">{title}</h3>
+    <h3 class="font-headline-sm text-headline-sm">{title}</h3>
     {subtitle && <p class="font-body-md text-body-md opacity-80">{subtitle}</p>}
   </div>
 </a>

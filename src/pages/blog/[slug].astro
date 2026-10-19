@@ -2,8 +2,9 @@
 import { getCollection, render } from "astro:content";
 import type { GetStaticPaths } from "astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import Icon from "../../components/Icon.astro";
 
-// Only entries without a `repo` get an internal page — repo entries link out,
+// Only entries without a `repo` get an internal page; repo entries link out,
 // so generating a page for them would create dead routes.
 export const getStaticPaths = (async () => {
   const posts = await getCollection(
@@ -35,14 +36,14 @@ const dateLabel = date?.toLocaleDateString("en-US", {
     <header class="max-w-3xl mx-auto mb-12">
       <a
         href="/blog"
-        class="inline-flex items-center gap-1 font-ui-text text-[14px] font-medium opacity-60 hover:opacity-100 transition-opacity mb-8"
+        class="inline-flex items-center gap-1 font-ui-text text-caption font-medium opacity-60 hover:opacity-100 transition-opacity mb-8"
       >
-        <span class="material-symbols-outlined text-base">arrow_back</span>
-        All work
+        <Icon name="arrow-left" class="size-4" />
+        Projects &amp; Writing
       </a>
       {
         dateLabel && (
-          <span class="block font-ui-text text-[14px] font-medium opacity-60 mb-3">
+          <span class="block font-ui-text text-caption font-medium opacity-60 mb-3">
             {dateLabel}
           </span>
         )

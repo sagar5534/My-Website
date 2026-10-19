@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import PostCard from "./PostCard.astro";
+import Icon from "./Icon.astro";
 
 // Single source of truth: the homepage grid shows featured entries from the
 // posts collection (newest first), so it stays in sync with /blog.
@@ -10,8 +11,8 @@ const featured = (
 ---
 
 <section
-  id="works"
-  class="px-margin-mobile md:px-margin-page py-section-gap border-t border-outline-variant"
+  id="projects"
+  class="px-margin-mobile md:px-margin-page py-section-gap"
 >
   <div class="max-w-7xl mx-auto">
     <div
@@ -21,11 +22,11 @@ const featured = (
         <h2 class="font-headline-lg text-headline-lg">Featured<br />Projects</h2>
       </div>
       <a
-        class="flex items-center gap-2 font-ui-text text-[16px] font-bold group"
+        class="flex items-center gap-2 font-ui-text text-ui font-semibold group"
         href="/blog"
       >
-        <span class="border-b-2 border-transparent group-hover:border-on-background">View All Work</span>
-        <span class="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform">north_east</span>
+        <span class="border-b-2 border-transparent group-hover:border-ink">All projects</span>
+        <Icon name="arrow-up-right" class="size-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
       </a>
     </div>
 

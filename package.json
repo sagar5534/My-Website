@@ -1,5 +1,5 @@
 {
-  "name": "",
+  "name": "sagarp-site",
   "type": "module",
   "version": "0.0.1",
   "engines": {
@@ -17,9 +17,7 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
-    "@fontsource-variable/material-symbols-outlined": "^5.2.45",
     "@fontsource/archivo": "^5.2.8",
-    "@fontsource/inter": "^5.2.8",
     "@tailwindcss/vite": "^4.3.0",
     "astro": "^6.4.6",
     "tailwindcss": "^4.3.0"
